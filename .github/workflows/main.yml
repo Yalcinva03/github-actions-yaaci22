@@ -36,8 +36,9 @@ jobs:
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE_ERRORS: true 
-  build-and-push-latest:
+  docker-image:
     runs-on: ubuntu-latest
+    needs: [Build]
     permissions:
       packages: write
     steps:
@@ -55,7 +56,7 @@ jobs:
           tags: ghcr.io/yalcinva03/micronaut-app:1.0-${{ github.sha }},ghcr.io/yalcinva03/micronaut-app:latest
   Component-test:
     runs-on: ubuntu-latest
-    needs: [Build]
+    needs: [docker-image]
     steps:
       - name: Download test
         uses: actions/download-artifact@v4
@@ -66,7 +67,7 @@ jobs:
         run: bash ci/component-test.sh
   Performance-test:
     runs-on: ubuntu-latest
-    needs: [Build]
+    needs: [docker-image]
     steps:
       - name: Download test
         uses: actions/download-artifact@v4
