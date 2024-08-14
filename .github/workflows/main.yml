@@ -1,5 +1,9 @@
 name: Main workflow
 on: push
+env:
+  docker_username: yalcinva03
+  docker_password: ${{ secrets.GITHUB_TOKEN }}
+  GIT_COMMIT: ${{ github.sha }}
 jobs:
   Build:
     runs-on: ubuntu-latest
@@ -25,6 +29,10 @@ jobs:
         with:
           name: code
           path: .
+      - name: build docker
+        run: bash ci/build-docker.sh
+      - name: push docker
+        run: bash ci/push-docker.sh
       - name: run linting
         uses: super-linter/super-linter/slim@v5 
         env:
